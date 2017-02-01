@@ -1,0 +1,59 @@
+body{
+	background:-webkit-linear-gradient(rgba(0,0,0,.5),rgba(0,0,0,.5)), url("http://i.imgur.com/fZr3AKV.jpg") no-repeat center fixed;
+	background:-o-linear-gradient(rgba(0,0,0,.5),rgba(0,0,0,.5)), url("http://i.imgur.com/fZr3AKV.jpg") no-repeat center fixed;
+	background:-moz-linear-gradient(rgba(0,0,0,.5),rgba(0,0,0,.5)), url("http://i.imgur.com/fZr3AKV.jpg") no-repeat center fixed;
+	background:linear-gradient(rgba(0,0,0,.5),rgba(0,0,0,.5)), url("http://i.imgur.com/fZr3AKV.jpg") no-repeat center fixed;
+	background-size:cover;
+	/* background:linear-gradient(rgba(0,0,0,.5),rgba(0,0,0,.5)), url("https://i.imgur.com/jPwJWm1.jpg") no-repeat center fixed; 
+	 background: url("https://i.imgur.com/jPwJWm1.jpg"); */
+}
+
+.show-nav-button{
+	color:#FFFFFF;
+	padding-top:20px;
+	font-size:30px;
+
+}
+
+.sidenav{
+	height:100%;
+	width:50px;
+	position:fixed;
+	z-index: 1;
+	top:0;
+	left:0;
+	background-color:#111;
+	opacity:.8;
+	overflow-x: hidden;
+	padding-top: 20px;
+	transition: 0.5s;
+}
+
+.sidenav a{
+	text-decoration: none;
+	font-size: 25px;
+	color: #818181;
+	transition: 0.3s;
+}
+
+.sidenav a:hover, .offcanvas a:focus{
+	color:#f1f1f1;
+}
+
+.sidenav-items{
+	display:none;
+}
+
+.menu-toggle{
+	position:absolute;
+	top:0;
+	right:12px;
+	font-size:25px;
+	color:#FFFFFF;
+}
+
+.main-container{
+	transiton:margin-left .5s;
+	padding:20px;
+	margin-left:70px;
+}
