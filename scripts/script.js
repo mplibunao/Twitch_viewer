@@ -22,16 +22,20 @@ $(document).ready(function(){
 		//the sdk is now loaded
 	//	console.log('Twitch javacript sdk now loaded');
 	//});
+	var myChannels = ["Starladder1", "dotastarladder_en", "EternaLEnVyy", "BeyondtheSummit_ES"];
 
-	checkChannelStatus();
+	checkChannelStatus(myChannels[0]);
 
 
 })
 
-var checkChannelStatus = function(){
+var checkChannelStatus = function(channel){
+	var url = "https://api.twitch.tv/kraken/streams/" + channel;
+
 	$.ajax({
 		type: "GET",
-		url: "https://api.twitch.tv/kraken/streams/ESL_SC2",
+		url: url,
+		dataType: "jsonp",
 		headers: {
 			'Client-ID': 'i0bm039u6j4dr1ifl1t3v2s16srrhq'
 		},
@@ -39,4 +43,11 @@ var checkChannelStatus = function(){
 			console.log(json);
 		}
 	})
+}
+
+var fetchChannelList = function(game){
+	$.ajax({
+		type: "GET",
+		url: "https://api.twitch.tv/kraken/streams/"
+	});
 }
