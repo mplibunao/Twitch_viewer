@@ -1,8 +1,8 @@
 body{
-	background:-webkit-linear-gradient(rgba(0,0,0,.5),rgba(0,0,0,.5)), url("http://i.imgur.com/fZr3AKV.jpg") no-repeat center fixed;
-	background:-o-linear-gradient(rgba(0,0,0,.5),rgba(0,0,0,.5)), url("http://i.imgur.com/fZr3AKV.jpg") no-repeat center fixed;
-	background:-moz-linear-gradient(rgba(0,0,0,.5),rgba(0,0,0,.5)), url("http://i.imgur.com/fZr3AKV.jpg") no-repeat center fixed;
-	background:linear-gradient(rgba(0,0,0,.5),rgba(0,0,0,.5)), url("http://i.imgur.com/fZr3AKV.jpg") no-repeat center fixed;
+	background:-webkit-linear-gradient(rgba(0,0,0,.5),rgba(0,0,0,.5)), url("https://i.imgur.com/fZr3AKV.jpg") no-repeat center fixed;
+	background:-o-linear-gradient(rgba(0,0,0,.5),rgba(0,0,0,.5)), url("https://i.imgur.com/fZr3AKV.jpg") no-repeat center fixed;
+	background:-moz-linear-gradient(rgba(0,0,0,.5),rgba(0,0,0,.5)), url("https://i.imgur.com/fZr3AKV.jpg") no-repeat center fixed;
+	background:linear-gradient(rgba(0,0,0,.5),rgba(0,0,0,.5)), url("https://i.imgur.com/fZr3AKV.jpg") no-repeat center fixed;
 	background-size:cover;
 	color:#FFFFFF;
 }
