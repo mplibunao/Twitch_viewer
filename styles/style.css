@@ -10,9 +10,15 @@ body{
 
 .show-nav-button{
 	color:#FFFFFF;
+	top:0;
 	padding-top:20px;
+	position:absolute;
+	right:12px;
 	font-size:30px;
+}
 
+.show-nav-button:hover{
+	color:#a3a375;
 }
 
 .sidenav{
@@ -29,28 +35,23 @@ body{
 	transition: 0.5s;
 }
 
-.sidenav a{
-	text-decoration: none;
-	font-size: 25px;
-	color: #818181;
-	transition: 0.3s;
+.sidenav-items:hover{
+	color:#f1f1f1;
 }
 
-.sidenav a:hover, .offcanvas a:focus{
-	color:#f1f1f1;
+.sidenav-item-container{
+	padding-top:40px;
+	text-align: center;
 }
 
 .sidenav-items{
 	display:none;
+	text-decoration: none;
+	font-size: 25px;
+	color: #818181;
+	transition: 0.3s;	
 }
 
-.menu-toggle{
-	position:absolute;
-	top:0;
-	right:12px;
-	font-size:25px;
-	color:#FFFFFF;
-}
 
 .main-container{
 	transiton:margin-left .5s;
