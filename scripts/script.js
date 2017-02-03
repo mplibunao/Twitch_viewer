@@ -22,32 +22,82 @@ $(document).ready(function(){
 		//the sdk is now loaded
 	//	console.log('Twitch javacript sdk now loaded');
 	//});
-	var myChannels = ["Starladder1", "dotastarladder_en", "EternaLEnVyy", "BeyondtheSummit_ES"];
 
-	checkChannelStatus(myChannels[0]);
+	var myChannels = ["Starladder1", "dotastarladder_en", "EternaLEnVyy", "BeyondtheSummit_ES", "Freecodecamp", "brunofin", "comster404"];
+	//checkChannelStatus(myChannels[2]);
+	//checkChannelStatus(myChannels[5]); //null / Twitch account does not exist or Streamer has closed their account
+	//checkChannelStatus(myChannels[4]); //offline
+	var game = ["Dota 2"]
+	
+	for (var i=0; i<myChannels.length; i++){
+		getChannelInfo(myChannels[i]);
+	}
 
+	/*
+	myChannels.forEach(function(channel){
+		getChannelInfo(channel).then(function(result){
+			console.log("Result: "+ result.jqXHR);
+		}, function(error){
+			console.log("Error", error);
+		})
+	});
+	*/
+	//fetchChannelList(myChannels);
+	//fetchChannelList(myChannels.join(','));
 
 })
 
-var checkChannelStatus = function(channel){
+/*
+var getChannelInfo = function(channel){
 	var url = "https://api.twitch.tv/kraken/streams/" + channel;
+	return ChannelInfo = new Promise(resolve, reject){
+		var apiResults = $.ajax({
+			url: url,
+			type: "GET",
+			dataType: "jsonp",
+			headers: {
+				'Client-ID': 'i0bm039u6j4dr1ifl1t3v2s16srrhq'
+			},
+			suceess: function(json){
+				resolve(json);
+			}
+		});
+	}.
+}*/
 
+$.ajaxSetup({
+  headers : {
+    'Client-ID': 'i0bm039u6j4dr1ifl1t3v2s16srrhq'
+  }
+});
+
+var getChannelInfo = function(channel){
+	var url = "https://api.twitch.tv/kraken/streams/" + channel;
+	return new Promise(resolve, reject){
+		$.getJSON(url, function(json){
+		resolve(json);
+		});
+	}
+
+} 
+
+
+
+
+
+var fetchChannelList = function(channels){
+	var url = "https://api.twitch.tv/kraken/streams/";
 	$.ajax({
-		type: "GET",
 		url: url,
-		dataType: "jsonp",
+		data: {
+			"channel": channels,
+			"stream_type": "all"
+		},
 		headers: {
 			'Client-ID': 'i0bm039u6j4dr1ifl1t3v2s16srrhq'
 		},
 		success: function(json){
 			console.log(json);
 		}
-	})
-}
-
-var fetchChannelList = function(game){
-	$.ajax({
-		type: "GET",
-		url: "https://api.twitch.tv/kraken/streams/"
 	});
 }
