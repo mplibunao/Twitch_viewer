@@ -24,34 +24,19 @@ $(document).ready(function(){
 	//});
 
 	var myChannels = ["Starladder1", "dotastarladder_en", "EternaLEnVyy", "BeyondtheSummit_ES", "Freecodecamp", "brunofin", "comster404"];
-	//checkChannelStatus(myChannels[2]);
-	//checkChannelStatus(myChannels[5]); //null / Twitch account does not exist or Streamer has closed their account
-	//checkChannelStatus(myChannels[4]); //offline
-	var game = ["Dota 2"]
+	var game = ["Dota 2"];
 	
-	for (var i=0; i<myChannels.length; i++){
-		getChannelInfo(myChannels[i]);
-	}
-
-	/*
-	myChannels.forEach(function(channel){
-		getChannelInfo(channel).then(function(result){
-			console.log("Result: "+ result.jqXHR);
-		}, function(error){
-			console.log("Error", error);
-		})
-	});
-	*/
-	//fetchChannelList(myChannels);
-	//fetchChannelList(myChannels.join(','));
+	//myChannels.forEach(function(channel){
+	//	getChannelInfo(channel);
+	//});
+	getChannelInfo(myChannels[0]);
 
 })
 
-/*
+
 var getChannelInfo = function(channel){
 	var url = "https://api.twitch.tv/kraken/streams/" + channel;
-	return ChannelInfo = new Promise(resolve, reject){
-		var apiResults = $.ajax({
+		$.ajax({
 			url: url,
 			type: "GET",
 			dataType: "jsonp",
@@ -59,29 +44,10 @@ var getChannelInfo = function(channel){
 				'Client-ID': 'i0bm039u6j4dr1ifl1t3v2s16srrhq'
 			},
 			suceess: function(json){
-				resolve(json);
+				console.log(json);
 			}
 		});
-	}.
-}*/
-
-$.ajaxSetup({
-  headers : {
-    'Client-ID': 'i0bm039u6j4dr1ifl1t3v2s16srrhq'
-  }
-});
-
-var getChannelInfo = function(channel){
-	var url = "https://api.twitch.tv/kraken/streams/" + channel;
-	return new Promise(resolve, reject){
-		$.getJSON(url, function(json){
-		resolve(json);
-		});
 	}
-
-} 
-
-
 
 
 
