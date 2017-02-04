@@ -20,6 +20,38 @@ body{
 	color:#a3a375;
 }
 
+.search-streamer{
+	display:none;
+	border:1px solid #ccc;
+	border-radius: 4px;
+	background-color:#FFF;
+	height: 34px;
+	width:230px;
+	font-size:14px;
+	padding:6px 12px;
+	margin-left:30px;
+	color:#000;
+
+	box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+	-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+	transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+	-webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+    -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+}
+
+.menu{
+	display:none;
+	text-align: center;
+	border:1px solid #5c5c3d;
+	padding-top:10px;
+	margin-top:20px;
+}
+
+.menu:hover{
+	background-color:#1f1f14;
+	cursor:pointer;
+}
+
 .sidenav{
 	height:100%;
 	width:50px;
@@ -32,6 +64,7 @@ body{
 	overflow-x: hidden;
 	padding-top: 20px;
 	transition: 0.5s;
+	overflow-y: hidden;
 }
 
 .sidenav-items:hover{
@@ -39,8 +72,8 @@ body{
 }
 
 .sidenav-item-container{
-	padding-top:50px;
-	
+	padding-top:20px;
+
 	
 }
 

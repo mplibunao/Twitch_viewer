@@ -2,11 +2,13 @@ $(document).ready(function(){
 
 	//hide sidenav items initially
 	var isClose = true;
-
+	//nav bar items
 	$('.show-nav-button').on('click', function(){
 		if (isClose === true){
 			$('.sidenav').animate({width: '+=250px'}, 'fast');
 			$('.main-container').animate({marginLeft: '+=250px'}, 'slow');
+			$('.search-streamer').show();
+			$('.streamer-menu').contents().show();
 			//show list of streamers
 			$('.streamer-row').show(200);
 			$('.streamer-row').contents().show(600);
@@ -14,6 +16,8 @@ $(document).ready(function(){
 		} else if (isClose === false){
 			$('.sidenav').animate({width: '-=250px'}, 'fast');
 			$('.main-container').animate({marginLeft: '-=250px'}, 'slow');
+			$('.search-streamer').hide();
+			$('.streamer-menu').contents().hide();
 			$('.streamer-row').hide(200);
 			$('.streamer-row').contents().hide(600);
 			isClose = true;
@@ -52,10 +56,32 @@ $(document).ready(function(){
 	});
 
 
+	/*  @ Event handlder for Status Menu Buttons
+		@ Calls the filterStreamers function which filters
+		the result on the sidebar depending parameter
+		@ Passes a string name of the class name
+	*/
+	$('.menu-online').on('click', function(){
+		console.log('hoo');
+		filterStreamers('.online');
+	})
+
+	$('.menu-offline').on('click', function(){
+		console.log('hoo');
+		filterStreamers('.offline');
+	})
+
+	$('.menu-all').on('click', function(){
+		console.log('hoo');
+		filterStreamers('.streamer-row');
+	})
+
+
 
 
 
 })//close document ready
+
 
 /*
    Get information about the channel using ajax call
@@ -82,6 +108,13 @@ var getChannelInfo = function(channels, callbackFunction){
 	});
 }
 
+/* @ Call the getChannelInfo function
+   @ Passes an anonymous function as an argument
+   which handles success login
+   @ Anonymous function takes the result json as
+   parameter and passes it to another function to
+   put into the page
+*/
 var getDefaultChannels = function(channelArray){
 	var logo;
 	var displayName;
@@ -103,28 +136,38 @@ var getDefaultChannels = function(channelArray){
 				game = json.stream.channel.game;
 				language = json.stream.channel.broadcaster_language;
 				viewers = json.stream.viewers;
+
+				//check for language
+				language=language.toUpperCase();
+
 				setStreamerNav(logo, displayName, url, status, game, language, viewers);
 			} else{
 				//offline
+				setOfflineStreamer("media/fi-torso.svg", channel);
 			}
 
 		});
 	});
 }
 	
-
+/* Displays the information fetched from twitch to the webpage
+   @Takes variables as parameters and puts it inside html
+   @htmlJquery and @detailsJquery - are placeholder variables
+   so I can convert the html into a jQuery object then pass .hide()
+   and be hidden on creation
+*/
 var setStreamerNav = function(logo, displayName, url, status, game, language, viewers){
 	//store the markup in a jquery so you can use jquery like hide
 	var htmlJquery;
 	var detailsJquery;
 
-	var html = '<div class="row streamer-row">';
+	var html = '<div class="row streamer-row online">';
 	html+= '<img class="streamer-logo" src="'+ logo +'" alt="' + displayName + '"/>';
-	html+= '<a class="sidenav-items" href="' + url + '">' + displayName + '</a>';
+	html+= '<a class="sidenav-items streamer-name" href="' + url + '">' + displayName + '</a>';
 	html+= '<a href="#" class="streamer-more-info"><i class="fa fa-chevron-down" aria-hidden="true"></i></a>';
 	html+= '</div>';
 
-	var details = '<div class="row streamer-details">';
+	var details = '<div class="row streamer-details offline">';
 	details+= '<p class="details-status">' + status + '</p>';
 	details+= '<p class="details-game">Game : ' + game + '</p>';
 	details+= '<p class="details-language">' + language + '</p>';
@@ -137,12 +180,58 @@ var setStreamerNav = function(logo, displayName, url, status, game, language, vi
 	//append in sidenav container
 	$('.sidenav-item-container').append(htmlJquery);
 	$('.sidenav-item-container').append(detailsJquery);
-	//show only htmlJquery
-	//htmlJquery.show();
 
 }
 
+/* Displays the information of offline streamers
+   @Takes variables as parameters and puts it inside html
+   @htmlJquery and @detailsJquery - are placeholder variables
+   so I can convert the html into a jQuery object then pass .hide()
+   and be hidden on creation
+*/
+var setOfflineStreamer = function(logo, displayName){
 
+	var htmlJquery;
+	var detailsJquery;
+
+	var html = '<div class="row streamer-row offline">';
+	html+= '<img class="streamer-logo" src="'+ logo +'" alt="' + displayName + '"/>';
+	html+= '<a class="sidenav-items" href="#">' + displayName + '</a>';
+	html+= '<a href="#" class="streamer-more-info"><i class="fa fa-chevron-down" aria-hidden="true"></i></a>';
+	html+= '</div>';
+
+	var details = '<div class="row streamer-details offline">';
+	details+= '<p class="details-status">' + displayName + ' is offline</p>';
+	details+= '</div>';
+
+	htmlJquery = $(html).hide();
+	detailsJquery = $(details).hide();
+
+	//append in sidenav container
+
+	setTimeout(function(){
+		$('.sidenav-item-container').append(htmlJquery);
+		$('.sidenav-item-container').append(detailsJquery);
+		console.log('done waiting');
+	},1000);
+	
+}
+
+
+/* Filter list of streamers in the navbar
+@ Wildcard param is the streamer status to display
+@ Possible params include @ .online @ .offline @ .streamer-row (all)
+@ First hides all streamers and their details
+@ Then shows the streamers (not details) with the matching class
+*/
+var filterStreamers = function(wildcard){
+	console.log('wildcard: '+wildcard);
+	//hide all elements first
+	$('.streamer-row').hide();
+	$('.streamer-details').hide();
+	//only show streamer-row with matching class
+	$(wildcard).show();
+}
 
 
 var fetchChannelList = function(channels){
