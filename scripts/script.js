@@ -1,3 +1,6 @@
+//set player as global variable
+var player;
+
 $(document).ready(function(){
 
 	//hide sidenav items initially
@@ -18,8 +21,7 @@ $(document).ready(function(){
 			$('.main-container').animate({marginLeft: '-=250px'}, 'slow');
 			$('.search-streamer').hide();
 			$('.streamer-menu').contents().hide();
-			$('.streamer-row').hide(200);
-			$('.streamer-row').contents().hide(600);
+			closeNav();
 			isClose = true;
 		}
 	});
@@ -29,15 +31,6 @@ $(document).ready(function(){
 		//the sdk is now loaded
 	//	console.log('Twitch javacript sdk now loaded');
 	//});
-
-	var myChannels = ["WagamamaTV", "ODPixel", "Starladder1", "ESL_SC2", "dotastarladder_en", "EternaLEnVyy", "BeyondtheSummit_ES", "Freecodecamp", "OgamingSC2", "cretetion"];
-	var game = ["Dota 2"];
-	
-	getDefaultChannels(myChannels);
-
-	//console.log(myChannels[1]);
-	//getChannelInfo(myChannels[1]);
-	//fetchChannelList(myChannels[1]);
 
 	//add event handlder for the viewMoreDetails button in the sidenav
 	$('.sidenav-item-container').on('click', '.streamer-more-info', function(){
@@ -62,25 +55,99 @@ $(document).ready(function(){
 		@ Passes a string name of the class name
 	*/
 	$('.menu-online').on('click', function(){
-		console.log('hoo');
 		filterStreamers('.online');
-	})
+	});
 
 	$('.menu-offline').on('click', function(){
-		console.log('hoo');
 		filterStreamers('.offline');
-	})
+	});
 
 	$('.menu-all').on('click', function(){
-		console.log('hoo');
 		filterStreamers('.streamer-row');
-	})
+	});
 
 
+	/*  Event handler for search bar
+		@Calls search streamer function to check for matching streamers
+		@searchParams is the current value of the search bar
+	*/
+	$('.search-streamer').on('keyup',function(){
+		var searchParams = $(this).val();
+		searchStreamer(searchParams);
+	});
 
+
+	var myChannels = ["WagamamaTV", "ODPixel", "Starladder1", "ESL_SC2", "dotastarladder_en", "EternaLEnVyy", "BeyondtheSummit_ES", "Freecodecamp", "OgamingSC2", "cretetion", "comster404"];
+	var game = ["Dota 2"];
+	
+	getDefaultChannels(myChannels);
+	createPlayer();
 
 
 })//close document ready
+
+/*  Creates an instance of Twitch Player
+	@ player var is a global variable so other functions can access it
+	@ channel = default channel is empty
+	@ volume = 50%
+*/
+var createPlayer = function(){
+	var option = {
+		width: 854,
+		height: 480,
+		channel: ""
+	};
+	player = new Twitch.Player("player", option);
+	player.setVolume(0.5);
+	player.pause();
+}
+
+
+/*
+
+
+*/
+var watch = function(channel){
+	var currentChannel = player.getChannel();
+	if (channel == currentChannel){
+		console.log('You\'re already watching this stream');
+	} else{
+		player.setChannel(channel);
+		player.pause();
+	}
+}
+
+
+
+/* Handles hiding all elements when closing nav
+	@.result is the main class for all streamers and their details
+	@find all chevron-up icons and converts them to chevron down
+*/
+var closeNav = function(){
+	$('.result').find('.fa-chevron-up').removeClass('fa-chevron-up').addClass('fa-chevron-down');
+	$('.result').hide();
+}
+
+/*  Searches the side nav for a matching streamer
+	@ displayName = String from search bar
+	@ Hides all elements then displays all matching elements
+	@ streamerName is placeholder variable
+	@ all variables are converted to lowercase before comparing
+	@ when a match has been found, traverse to the parent element and show that
+*/
+var searchStreamer = function(displayName){
+	var streamerName;
+	displayName = displayName.toLowerCase();
+	closeNav();
+	$('.streamer-name').each(function(index){
+		streamerName = $(this).html().toLowerCase();
+		if (streamerName.includes(displayName)){
+			$(this).closest('.streamer-row').show();
+		}
+	});
+
+}
+
 
 
 /*
@@ -144,6 +211,7 @@ var getDefaultChannels = function(channelArray){
 			} else{
 				//offline
 				setOfflineStreamer("media/fi-torso.svg", channel);
+				//do something with channel api
 			}
 
 		});
@@ -161,18 +229,18 @@ var setStreamerNav = function(logo, displayName, url, status, game, language, vi
 	var htmlJquery;
 	var detailsJquery;
 
-	var html = '<div class="row streamer-row online">';
+	var html = '<div class="row streamer-row result online">';
 	html+= '<img class="streamer-logo" src="'+ logo +'" alt="' + displayName + '"/>';
-	html+= '<a class="sidenav-items streamer-name" href="' + url + '">' + displayName + '</a>';
+	html+= '<a class="sidenav-items streamer-name" href="#" onclick="watch(\'' + displayName +'\')">' + displayName + '</a>';
 	html+= '<a href="#" class="streamer-more-info"><i class="fa fa-chevron-down" aria-hidden="true"></i></a>';
 	html+= '</div>';
 
-	var details = '<div class="row streamer-details offline">';
+	var details = '<div class="row streamer-details result">';
 	details+= '<p class="details-status">' + status + '</p>';
 	details+= '<p class="details-game">Game : ' + game + '</p>';
-	details+= '<p class="details-language">' + language + '</p>';
+	details+= '<p class="details-language">Language: ' + language + '</p>';
 	details+= '<p class="details-viewers">' + viewers + ' people currently watching!</p>';
-	details+= '<a href="' + url + '"><button class="btn btn-block">Watch</button></a>';
+	details+= '<a href="#"><button class="btn btn-block" onclick="watch(\'' + displayName +'\')">Watch</button></a>';
 	details+= '</div>';
 
 	htmlJquery = $(html).hide();
@@ -194,13 +262,13 @@ var setOfflineStreamer = function(logo, displayName){
 	var htmlJquery;
 	var detailsJquery;
 
-	var html = '<div class="row streamer-row offline">';
+	var html = '<div class="row streamer-row result offline">';
 	html+= '<img class="streamer-logo" src="'+ logo +'" alt="' + displayName + '"/>';
-	html+= '<a class="sidenav-items" href="#">' + displayName + '</a>';
+	html+= '<a class="sidenav-items streamer-name" href="#">' + displayName + '</a>';
 	html+= '<a href="#" class="streamer-more-info"><i class="fa fa-chevron-down" aria-hidden="true"></i></a>';
 	html+= '</div>';
 
-	var details = '<div class="row streamer-details offline">';
+	var details = '<div class="row streamer-details result">';
 	details+= '<p class="details-status">' + displayName + ' is offline</p>';
 	details+= '</div>';
 
@@ -225,10 +293,8 @@ var setOfflineStreamer = function(logo, displayName){
 @ Then shows the streamers (not details) with the matching class
 */
 var filterStreamers = function(wildcard){
-	console.log('wildcard: '+wildcard);
 	//hide all elements first
-	$('.streamer-row').hide();
-	$('.streamer-details').hide();
+	closeNav();
 	//only show streamer-row with matching class
 	$(wildcard).show();
 }
@@ -245,6 +311,7 @@ var fetchChannelList = function(channels){
 			"stream_type": "all"
 		},
 		headers: {
+			'Accept': 'application/vnd.twitchtv.v3+json',
 			'Client-ID': 'i0bm039u6j4dr1ifl1t3v2s16srrhq'
 		},
 		success: function(json){
