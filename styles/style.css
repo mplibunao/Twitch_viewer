@@ -28,7 +28,7 @@ body{
 	top:0;
 	left:0;
 	background-color:#111;
-	opacity:.8;
+	opacity:.9;
 	overflow-x: hidden;
 	padding-top: 20px;
 	transition: 0.5s;
@@ -39,17 +39,48 @@ body{
 }
 
 .sidenav-item-container{
-	padding-top:40px;
-	text-align: center;
+	padding-top:50px;
+	
+	
 }
 
 .sidenav-items{
 	display:none;
 	text-decoration: none;
-	font-size: 25px;
-	color: #818181;
-	transition: 0.3s;	
+	font-size: 18px;
+	color: #3277b3;
+	transition: 0.3s;
+	padding-left:10px;
+	
 }
+
+.streamer-row{
+	padding:15px 0 15px 30px;
+	border:1px solid #5c5c3d;
+	cursor:pointer;
+}
+
+.streamer-row:hover{
+	background-color:#1f1f14;
+}
+
+.streamer-logo{
+	height:3em;
+	width:3em;
+}
+
+.streamer-more-info{
+	padding-left:8px;
+	display:inline-block;
+}
+
+.streamer-details{
+	text-align: center;
+	padding: 10px 10px 10px 10px;
+	margin:0;
+	background-color: #2e2e1f;
+}
+
 
 
 .main-container{
@@ -57,3 +88,4 @@ body{
 	padding:20px;
 	margin-left:70px;
 }
+
