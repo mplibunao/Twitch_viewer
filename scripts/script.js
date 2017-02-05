@@ -1,29 +1,37 @@
-//set player as global variable
+/*	Global variables
+	@ player is the instance of the embedded twitch player
+	@ isClose is the boolean used to check navbar status
+	@ generatedFeaturedGames is an array containing all the names of
+	the featured games generated. This array is checked before generating
+	a list of featured games to prevent duplication. This also means that
+	you can only generate one list per game, else you have to refresh
+*/
 var player;
 var generatedFeaturedGames = [];
+var isClose = true;
 
 $(document).ready(function(){
-
-	//hide sidenav items initially
-	var isClose = true;
+	console.log(generatedFeaturedGames[0]);
 	//nav bar items
 	$('.show-nav-button').on('click', function(){
 		if (isClose === true){
-			$('.sidenav').animate({width: '+=250px'}, 'fast');
-			$('.main-container').animate({marginLeft: '+=250px'}, 'slow');
-			$('.search-streamer').show();
-			$('.streamer-menu').contents().show();
+			openNav('.streamer-row');
+			//$('.sidenav').animate({width: '+=250px'}, 'fast');
+			//$('.main-container').animate({marginLeft: '+=250px'}, 'slow');
+			//$('.search-streamer').show();
+			///$('.streamer-menu').contents().show();
 			//show list of streamers
-			$('.streamer-row').show(200);
-			$('.streamer-row').contents().show(600);
-			isClose = false;
+			//$('.streamer-row').show(200);
+			//$('.streamer-row').contents().show(600);
+			//isClose = false;
 		} else if (isClose === false){
-			$('.sidenav').animate({width: '-=250px'}, 'fast');
-			$('.main-container').animate({marginLeft: '-=250px'}, 'slow');
-			$('.search-streamer').hide();
-			$('.streamer-menu').contents().hide();
+			//$('.sidenav').animate({width: '-=250px'}, 'fast');
+			//$('.main-container').animate({marginLeft: '-=250px'}, 'slow');
+			//$('.search-streamer').hide();
+			//$('.streamer-menu').contents().hide();
+			clearNav();
 			closeNav();
-			isClose = true;
+			//isClose = true;
 		}
 	});
 
@@ -36,14 +44,14 @@ $(document).ready(function(){
 	//add event handlder for the viewMoreDetails button in the sidenav
 	$('.sidenav-item-container').on('click', '.streamer-more-info', function(){
 		//if hidden then unhide
-		if ($(this).closest('.streamer-row').next('.streamer-details').css("display") == "none"){
+		if ($(this).closest('.result').next('.streamer-details').css("display") == "none"){
 			//go up the parent (streamer-row) => next sibling (streamer-details) => select all children and itself 
-			$(this).closest('.streamer-row').next('.streamer-details').contents().addBack().show(400);
+			$(this).closest('.result').next('.streamer-details').contents().addBack().show(400);
 			//switch to up
 			$(this).children().removeClass('fa-chevron-down').addClass('fa-chevron-up');
 			//else if display is block then hide
-		} else if ($(this).closest('.streamer-row').next('.streamer-details').css("display") == "block"){
-			$(this).closest('.streamer-row').next('.streamer-details').contents().addBack().hide(400);
+		} else if ($(this).closest('.result').next('.streamer-details').css("display") == "block"){
+			$(this).closest('.result').next('.streamer-details').contents().addBack().hide(400);
 			//switch to up
 			$(this).children().removeClass('fa-chevron-up').addClass('fa-chevron-down');
 		}
@@ -78,11 +86,39 @@ $(document).ready(function(){
 	});
 
 	/*	Event Listener for featured games
+		@ If game is already found in generatedFeaturedGames
+		array then don't make the api call and just display
+		@ Else call getFeaturedGameStreamers to fetch the information
+		from twitch.tv servers
+		@ exists is a boolean value which tells if the game exists
+		to prevent doing the conditional statement inside the loop
+		- initially false
 	*/
 	$('.featured-games').on('click', '.featured-game-link', function(){
-		console.log('clicked');
 		var game = $(this).children('.featured-game-name').html();
-		getFeaturedGameStreamers(game);
+		var exists = false;
+
+		for (var i=0; i<=generatedFeaturedGames.length; i++){
+			//console.log("array: " +generatedFeaturedGames[i]);
+			if (game == generatedFeaturedGames[i]){
+				console.log('game already exisit');
+				exists = true;
+			}
+		}
+
+		if (exists === true){
+			clearNav();
+			//remove non-alphanumeric characters to make a valid class
+			var classStatus = game.replace(/\W/g, "-");
+			if (isClose === true){
+				openNav('.'+classStatus);	
+			} else if (isClose === false){
+				$('.'+classStatus).show(200);
+				$('.'+classStatus).contents().show(600);
+			}
+		} else if (exists === false){
+			getFeaturedGameStreamers(game);
+		}
 	});
 
 
@@ -95,6 +131,23 @@ $(document).ready(function(){
 
 
 })//close document ready
+
+/*	Handles opening nav bar
+	@ streamType is the name of the class to show
+	  for filtering results
+	@ Sets isClose to false after opening nav
+*/
+
+var openNav = function(streamType){
+	$('.sidenav').animate({width: '+=250px'}, 'fast');
+	$('.main-container').animate({marginLeft: '+=250px'}, 'slow');
+	$('.search-streamer').show();
+	$('.streamer-menu').contents().show();
+	//class
+	$(streamType).show(200);
+	$(streamType).contents().show(600);
+	isClose = false;
+}
 
 
 /*  Creates an instance of Twitch Player
@@ -130,13 +183,23 @@ var watch = function(channel){
 
 
 
-/* Handles hiding all elements when closing nav
-	@.result is the main class for all streamers and their details
-	@find all chevron-up icons and converts them to chevron down
+	/* Handles hiding all elements when closing nav
+	@ .result is the main class for all streamers and their details
+	@ find all chevron-up icons and converts them to chevron down
 */
-var closeNav = function(){
+var clearNav = function(){
 	$('.result').find('.fa-chevron-up').removeClass('fa-chevron-up').addClass('fa-chevron-down');
 	$('.result').hide();
+}
+/*  Handles animation for moving navbar to closed position
+	@ Set isClose to true after closing the nav
+*/
+var closeNav = function(){
+	$('.sidenav').animate({width: '-=250px'}, 'fast');
+	$('.main-container').animate({marginLeft: '-=250px'}, 'slow');
+	$('.search-streamer').hide();
+	$('.streamer-menu').contents().hide();
+	isClose = true;
 }
 
 /*  Searches the side nav for a matching streamer
@@ -149,7 +212,7 @@ var closeNav = function(){
 var searchStreamer = function(displayName){
 	var streamerName;
 	displayName = displayName.toLowerCase();
-	closeNav();
+	clearNav();
 	$('.streamer-name').each(function(index){
 		streamerName = $(this).html().toLowerCase();
 		if (streamerName.includes(displayName)){
@@ -206,9 +269,11 @@ var setFeaturedGames = function(name, poster, viewers){
 
 /*  Fetches information about live streams
 	@ game = name of the game
-
+	@ classStatus - replaces all non-alphanumeric characters with '-' to make it a valid class name
+	@ handles animation after appending all information to html
+	@ generatedFeaturedGames array is pushed with the name of the game after displaying the streamers
+	  this is to prevent from calling the api again when the poster is clicked resulting in duplicate streams
 */
-
 var getFeaturedGameStreamers = function(game){
 	var url = "https://api.twitch.tv/kraken/streams/";
 	var logo;
@@ -217,7 +282,9 @@ var getFeaturedGameStreamers = function(game){
 	var status;
 	var language;
 	var viewers;
-	var classStatus = "featured " + game;
+	var classStatus = game;
+	classStatus = classStatus.replace(/\W/g, "-");
+	console.log(classStatus);
 	$.ajax({
 		url: url,
 		type: "GET",
@@ -239,9 +306,19 @@ var getFeaturedGameStreamers = function(game){
 				//game = json.streams[i].channel.game; we have game already
 				language = json.streams[i].channel.language;
 				viewers = json.streams[i].viewers;
-				setStreamerNav(logo, displayName, url, status, game, language, viewers, classStatus);
-			}
+				setFeaturedGameNav(logo, displayName, url, status, game, language, viewers, classStatus);
 
+			}
+			//after loop set show featured games
+			clearNav();
+			if (isClose === true){
+				openNav('.'+classStatus);	
+			} else if (isClose === false){
+				$('.'+classStatus).show(200);
+				$('.'+classStatus).contents().show(600);
+				
+			}
+			generatedFeaturedGames.push(game);
 		},
 		error: function(jqXHR, exception){
 			console.log("Exception: "+exception);
@@ -252,15 +329,15 @@ var getFeaturedGameStreamers = function(game){
 
 /*	Annoyingly identical to setStreamerNav function except:
 	@ removed the class "streamer-row" from the parent div
+	@ added featured class in parent div
+	@ classStatus is the name of the game
 	@ appends it as unhidden
-	@ handles animation after appending
 */
 var setFeaturedGameNav = function(logo, displayName, url, status, game, language, viewers, classStatus){
-	//store the markup in a jquery so you can use jquery like hide
 	var htmlJquery;
 	var detailsJquery;
 
-	var html = '<div class="row result ' + classStatus + '">';
+	var html = '<div class="row featured result ' + classStatus + '">';
 	html+= '<img class="streamer-logo" src="'+ logo +'" alt="' + displayName + '"/>';
 	html+= '<a class="sidenav-items streamer-name" href="#" onclick="watch(\'' + displayName +'\')">' + displayName + '</a>';
 	html+= '<a href="#" class="streamer-more-info"><i class="fa fa-chevron-down" aria-hidden="true"></i></a>';
@@ -274,13 +351,13 @@ var setFeaturedGameNav = function(logo, displayName, url, status, game, language
 	details+= '<a href="#"><button class="btn btn-block" onclick="watch(\'' + displayName +'\')">Watch</button></a>';
 	details+= '<a href="' + url + '" target="_blank"><button class="btn btn-block visit-channel">Visit Channel</button></a>';
 	details+= '</div>';
-
+	
+	
 	htmlJquery = $(html).hide();
 	detailsJquery = $(details).hide();
 	//append in sidenav container
 	$('.sidenav-item-container').append(htmlJquery);
 	$('.sidenav-item-container').append(detailsJquery);
-
 }
 
 
@@ -486,7 +563,7 @@ var setClosedChannel = function(logo, displayName){
 */
 var filterStreamers = function(wildcard){
 	//hide all elements first
-	closeNav();
+	clearNav();
 	//only show streamer-row with matching class
 	$(wildcard).show();
 }

@@ -1,3 +1,4 @@
+
 body{
 	background:-webkit-linear-gradient(rgba(0,0,0,.5),rgba(0,0,0,.5)), url("https://i.imgur.com/fZr3AKV.jpg") no-repeat center fixed;
 	background:-o-linear-gradient(rgba(0,0,0,.5),rgba(0,0,0,.5)), url("https://i.imgur.com/fZr3AKV.jpg") no-repeat center fixed;
@@ -62,6 +63,8 @@ html{
 
 .menu-link:hover{
 	text-decoration: none;
+	font-weight: bold;
+	color:#FFF;
 }
 
 .sidenav{
@@ -81,6 +84,8 @@ html{
 
 .sidenav-items:hover{
 	color:#f1f1f1;
+	font-weight: bold;
+	text-decoration: none;
 }
 
 .sidenav-item-container{
@@ -107,6 +112,16 @@ html{
 	background-color:#1f1f14;
 }
 
+.featured{
+	padding:15px 0 15px 30px;
+	border:1px solid #5c5c3d;
+	cursor:pointer;
+}
+
+.featured:hover{
+	background-color:#1f1f14;
+}
+
 .streamer-logo{
 	height:3em;
 	width:3em;
@@ -119,6 +134,11 @@ html{
 .streamer-more-info{
 	padding-left:8px;
 	display:inline-block;
+}
+
+.streamer-more-info:hover{
+	color:#FFF;
+	font-weight: bold;
 }
 
 .streamer-details{
@@ -177,6 +197,6 @@ html{
 
 .featured-game-link:hover{
 	text-decoration: none;
-	color:#3277b3;
+	color:#000;
 	font-weight: bold;
 }
