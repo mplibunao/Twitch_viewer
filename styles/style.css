@@ -5,6 +5,13 @@ body{
 	background:linear-gradient(rgba(0,0,0,.5),rgba(0,0,0,.5)), url("https://i.imgur.com/fZr3AKV.jpg") no-repeat center fixed;
 	background-size:cover;
 	color:#FFFFFF;
+	height:100%;
+	min-height: 100%;
+}
+
+html{
+	height:100%;
+	min-height: 100%;
 }
 
 .show-nav-button{
@@ -26,7 +33,7 @@ body{
 	border-radius: 4px;
 	background-color:#FFF;
 	height: 34px;
-	width:230px;
+	width:220px;
 	font-size:14px;
 	padding:6px 12px;
 	margin-left:30px;
@@ -45,11 +52,16 @@ body{
 	border:1px solid #5c5c3d;
 	padding-top:10px;
 	margin-top:20px;
+	padding-bottom: 10px;
 }
 
 .menu:hover{
 	background-color:#1f1f14;
 	cursor:pointer;
+}
+
+.menu-link:hover{
+	text-decoration: none;
 }
 
 .sidenav{
@@ -64,7 +76,7 @@ body{
 	overflow-x: hidden;
 	padding-top: 20px;
 	transition: 0.5s;
-	overflow-y: hidden;
+	overflow-y: auto;
 }
 
 .sidenav-items:hover{
@@ -73,8 +85,6 @@ body{
 
 .sidenav-item-container{
 	padding-top:20px;
-
-	
 }
 
 .sidenav-items{
@@ -102,6 +112,10 @@ body{
 	width:3em;
 }
 
+.visit-channel{
+	margin-top:10px;
+}
+
 .streamer-more-info{
 	padding-left:8px;
 	display:inline-block;
@@ -122,3 +136,47 @@ body{
 	margin-left:70px;
 }
 
+.player-container{
+	padding-top:30px;
+}
+
+.featured-games-container{
+	
+	padding: 70px 70px 0 70px;
+}
+
+.featured-games-result{
+	display:inline-block;
+	height:270px;
+	width:140px;
+	margin: 40px 40px 10px 0;
+}
+
+.featured-games{
+	margin-top:20px;
+	padding:0 0px 0 100px;
+}
+
+.featured-game-box{
+	padding-bottom:10px;
+}
+
+.featured-game-name{
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+.featured-game-viewers{
+
+}
+
+.featured-game-link{
+	color:#FFF;
+}
+
+.featured-game-link:hover{
+	text-decoration: none;
+	color:#3277b3;
+	font-weight: bold;
+}

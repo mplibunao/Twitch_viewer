@@ -1,5 +1,6 @@
 //set player as global variable
 var player;
+var generatedFeaturedGames = [];
 
 $(document).ready(function(){
 
@@ -76,15 +77,25 @@ $(document).ready(function(){
 		searchStreamer(searchParams);
 	});
 
+	/*	Event Listener for featured games
+	*/
+	$('.featured-games').on('click', '.featured-game-link', function(){
+		console.log('clicked');
+		var game = $(this).children('.featured-game-name').html();
+		getFeaturedGameStreamers(game);
+	});
+
 
 	var myChannels = ["WagamamaTV", "ODPixel", "Starladder1", "ESL_SC2", "dotastarladder_en", "EternaLEnVyy", "BeyondtheSummit_ES", "Freecodecamp", "OgamingSC2", "cretetion", "comster404"];
 	var game = ["Dota 2"];
 	
 	getDefaultChannels(myChannels);
 	createPlayer();
+	getFeaturedGames();
 
 
 })//close document ready
+
 
 /*  Creates an instance of Twitch Player
 	@ player var is a global variable so other functions can access it
@@ -103,9 +114,9 @@ var createPlayer = function(){
 }
 
 
-/*
-
-
+/*  Changes the stream in the embedded player
+	@ channel = name of the channel you want to switch to
+	@ currentChannel = name of the current channel you are streaming
 */
 var watch = function(channel){
 	var currentChannel = player.getChannel();
@@ -148,6 +159,129 @@ var searchStreamer = function(displayName){
 
 }
 
+/*	Fetch top games in twitch
+*/
+
+var getFeaturedGames = function(){
+	var url = "https://api.twitch.tv/kraken/games/top";
+	var name;
+	var poster;
+	var viewers;
+	$.ajax({
+		url: url,
+		type: "GET",
+		headers: {
+			'Accept': 'application/vnd.twitchtv.v3+json',
+			'Client-ID': 'i0bm039u6j4dr1ifl1t3v2s16srrhq'
+		},
+		success: function(json){
+			console.log(json);
+			for (var i=0; i<json.top.length; i++){
+				name = json.top[i].game.name;
+				poster = json.top[i].game.box.medium;
+				viewers = json.top[i].viewers;
+				setFeaturedGames(name, poster, viewers);
+			}
+		},
+		error: function(jqxHR, exception){
+			console.log("Exception: "+exception);
+			console.log(jqXHR);
+		}
+	});
+}
+
+/* Displays the top games information fetched using twitch api
+*/
+var setFeaturedGames = function(name, poster, viewers){
+	var html = '<div class="featured-games-result">';
+	html+= '<a href="#" class="featured-game-link">';
+	html+= '<img class="featured-game-box" src="' + poster + '" alt="' + name + '"/>';
+	html+= '<p class="featured-game-name">' + name + '</p>';
+	html+= '<p class="featured-game-viewers">' + viewers.toLocaleString() + ' viewers</p>';
+	html+= '</a>';
+	html+= '</div>';
+
+	$('.featured-games').append(html);
+}
+
+/*  Fetches information about live streams
+	@ game = name of the game
+
+*/
+
+var getFeaturedGameStreamers = function(game){
+	var url = "https://api.twitch.tv/kraken/streams/";
+	var logo;
+	var displayName;
+	var url;
+	var status;
+	var language;
+	var viewers;
+	var classStatus = "featured " + game;
+	$.ajax({
+		url: url,
+		type: "GET",
+		data: {
+			"game": game,
+			"stream-type": "live"
+		},
+		headers: {
+			'Accept': 'application/vnd.twitchtv.v3+json',
+			'Client-ID': 'i0bm039u6j4dr1ifl1t3v2s16srrhq'
+		},
+		success: function(json){
+			console.log(json);
+			for (var i=0; i<json.streams.length; i++){
+				logo = json.streams[i].channel.logo;
+				displayName = json.streams[i].channel.display_name;
+				url = json.streams[i].channel.url;
+				status =  json.streams[i].channel.status;
+				//game = json.streams[i].channel.game; we have game already
+				language = json.streams[i].channel.language;
+				viewers = json.streams[i].viewers;
+				setStreamerNav(logo, displayName, url, status, game, language, viewers, classStatus);
+			}
+
+		},
+		error: function(jqXHR, exception){
+			console.log("Exception: "+exception);
+			console.log(jqXHR);
+		}
+	});
+}
+
+/*	Annoyingly identical to setStreamerNav function except:
+	@ removed the class "streamer-row" from the parent div
+	@ appends it as unhidden
+	@ handles animation after appending
+*/
+var setFeaturedGameNav = function(logo, displayName, url, status, game, language, viewers, classStatus){
+	//store the markup in a jquery so you can use jquery like hide
+	var htmlJquery;
+	var detailsJquery;
+
+	var html = '<div class="row result ' + classStatus + '">';
+	html+= '<img class="streamer-logo" src="'+ logo +'" alt="' + displayName + '"/>';
+	html+= '<a class="sidenav-items streamer-name" href="#" onclick="watch(\'' + displayName +'\')">' + displayName + '</a>';
+	html+= '<a href="#" class="streamer-more-info"><i class="fa fa-chevron-down" aria-hidden="true"></i></a>';
+	html+= '</div>';
+
+	var details = '<div class="row streamer-details result">';
+	details+= '<p class="details-status">' + status + '</p>';
+	details+= '<p class="details-game">Game : ' + game + '</p>';
+	details+= '<p class="details-language">Language: ' + language + '</p>';
+	details+= '<p class="details-viewers">' + viewers + '</p>';
+	details+= '<a href="#"><button class="btn btn-block" onclick="watch(\'' + displayName +'\')">Watch</button></a>';
+	details+= '<a href="' + url + '" target="_blank"><button class="btn btn-block visit-channel">Visit Channel</button></a>';
+	details+= '</div>';
+
+	htmlJquery = $(html).hide();
+	detailsJquery = $(details).hide();
+	//append in sidenav container
+	$('.sidenav-item-container').append(htmlJquery);
+	$('.sidenav-item-container').append(detailsJquery);
+
+}
 
 
 /*
@@ -163,17 +297,70 @@ var getChannelInfo = function(channels, callbackFunction){
 		type: "GET",
 		dataType: "json",
 		headers: {
+			'Accept': 'application/vnd.twitchtv.v3+json',
 			'Client-ID': 'i0bm039u6j4dr1ifl1t3v2s16srrhq'
 		},
 		success: function(json){
-			//console.log(json);
 			callbackFunction(json);
 		},
 		error: function(jqXHR, exception){
-			console.log("jqXHR: "+jqXHR +"; exception: "+exception);
+			console.log("Exception: "+exception);
+			console.log(jqXHR);
 		}
 	});
 }
+
+/*	Gets the channel info of offline streamers
+	@ Uses channels api call instead of streams
+	@ offline status is passed as viewers parameters since it just displayed as is
+	  and because viewers are not a relevant information for offline streamers
+	@ classStatus will be used as the class selector for showing and hiding elements
+	@ ajax call will catch an error for streamers who don't exist
+*/
+
+var getOfflineChannelInfo = function(channel){
+	var logo
+	var displayName;
+	var url;
+	var status;
+	var game;
+	var language;
+	var offlineStatus;
+	var classStatus;
+
+	var url = "https://api.twitch.tv/kraken/channels/"+channel;
+	$.ajax({
+		url: url,
+		type: "GET",
+		dataType: "json",
+		headers: {
+			'Accept': 'application/vnd.twitchtv.v3+json',
+			'Client-ID': 'i0bm039u6j4dr1ifl1t3v2s16srrhq'
+		},
+		success: function(json){
+			logo = json.logo
+			displayName = json.display_name;
+			url = json.url;
+			status = json.status;
+			game = json.game;
+			language = json.language;
+			language = language.toUpperCase();
+			offlineStatus = displayName + " is currently offline";
+			classStatus = "offline";
+			setStreamerNav(logo, displayName, url, status, game, language, offlineStatus, classStatus);
+		},
+		error: function(jqXHR, exception){
+			console.log("Exception: "+exception);
+			console.log(jqXHR.responseText);
+			if (jqXHR.responseJSON.status == 404){
+				//setClosedChannel("media/fi-torso.svg", channel);
+				setClosedChannel("media/white-error-256_vix4cw.png", channel);
+				console.log("This streamer has either closed his account or does not exist");
+			}
+		}
+	});
+}
+
 
 /* @ Call the getChannelInfo function
    @ Passes an anonymous function as an argument
@@ -181,6 +368,7 @@ var getChannelInfo = function(channels, callbackFunction){
    @ Anonymous function takes the result json as
    parameter and passes it to another function to
    put into the page
+   @ classStatus will be used selector class for showing and removing elements
 */
 var getDefaultChannels = function(channelArray){
 	var logo;
@@ -190,11 +378,11 @@ var getDefaultChannels = function(channelArray){
 	var game;
 	var language;
 	var viewers;
+	var classStatus;
 
 	channelArray.forEach(function(channel){
 		//call function on success
 		getChannelInfo(channel, function(json){
-			console.log(json);
 			if (json.stream !== null){
 				logo = json.stream.channel.logo;
 				displayName = json.stream.channel.display_name;
@@ -203,15 +391,16 @@ var getDefaultChannels = function(channelArray){
 				game = json.stream.channel.game;
 				language = json.stream.channel.broadcaster_language;
 				viewers = json.stream.viewers;
-
+				viewers = viewers +" people currently watching!";
+				classStatus = "online";
 				//check for language
 				language=language.toUpperCase();
-
-				setStreamerNav(logo, displayName, url, status, game, language, viewers);
+				classStatus = "online";
+				setStreamerNav(logo, displayName, url, status, game, language, viewers, classStatus);
 			} else{
 				//offline
-				setOfflineStreamer("media/fi-torso.svg", channel);
 				//do something with channel api
+				getOfflineChannelInfo(channel);
 			}
 
 		});
@@ -224,12 +413,12 @@ var getDefaultChannels = function(channelArray){
    so I can convert the html into a jQuery object then pass .hide()
    and be hidden on creation
 */
-var setStreamerNav = function(logo, displayName, url, status, game, language, viewers){
+var setStreamerNav = function(logo, displayName, url, status, game, language, viewers, classStatus){
 	//store the markup in a jquery so you can use jquery like hide
 	var htmlJquery;
 	var detailsJquery;
 
-	var html = '<div class="row streamer-row result online">';
+	var html = '<div class="row streamer-row result ' + classStatus + '">';
 	html+= '<img class="streamer-logo" src="'+ logo +'" alt="' + displayName + '"/>';
 	html+= '<a class="sidenav-items streamer-name" href="#" onclick="watch(\'' + displayName +'\')">' + displayName + '</a>';
 	html+= '<a href="#" class="streamer-more-info"><i class="fa fa-chevron-down" aria-hidden="true"></i></a>';
@@ -239,8 +428,9 @@ var setStreamerNav = function(logo, displayName, url, status, game, language, vi
 	details+= '<p class="details-status">' + status + '</p>';
 	details+= '<p class="details-game">Game : ' + game + '</p>';
 	details+= '<p class="details-language">Language: ' + language + '</p>';
-	details+= '<p class="details-viewers">' + viewers + ' people currently watching!</p>';
+	details+= '<p class="details-viewers">' + viewers + '</p>';
 	details+= '<a href="#"><button class="btn btn-block" onclick="watch(\'' + displayName +'\')">Watch</button></a>';
+	details+= '<a href="' + url + '" target="_blank"><button class="btn btn-block visit-channel">Visit Channel</button></a>';
 	details+= '</div>';
 
 	htmlJquery = $(html).hide();
@@ -251,13 +441,14 @@ var setStreamerNav = function(logo, displayName, url, status, game, language, vi
 
 }
 
-/* Displays the information of offline streamers
+
+/* Displays channels not found
    @Takes variables as parameters and puts it inside html
    @htmlJquery and @detailsJquery - are placeholder variables
    so I can convert the html into a jQuery object then pass .hide()
    and be hidden on creation
 */
-var setOfflineStreamer = function(logo, displayName){
+var setClosedChannel = function(logo, displayName){
 
 	var htmlJquery;
 	var detailsJquery;
@@ -269,7 +460,8 @@ var setOfflineStreamer = function(logo, displayName){
 	html+= '</div>';
 
 	var details = '<div class="row streamer-details result">';
-	details+= '<p class="details-status">' + displayName + ' is offline</p>';
+	details+= '<p class="details-status">Account does not exist</p>';
+	details+= '<p class="details-language">' + displayName +' might have closed his account</p>';
 	details+= '</div>';
 
 	htmlJquery = $(html).hide();
@@ -297,29 +489,4 @@ var filterStreamers = function(wildcard){
 	closeNav();
 	//only show streamer-row with matching class
 	$(wildcard).show();
-}
-
-
-var fetchChannelList = function(channels){
-	var url = "https://api.twitch.tv/kraken/streams/";
-	$.ajax({
-		url: url,
-		type: "GET",
-		dataType: "json",
-		data: {
-			"channel": channels,
-			"stream_type": "all"
-		},
-		headers: {
-			'Accept': 'application/vnd.twitchtv.v3+json',
-			'Client-ID': 'i0bm039u6j4dr1ifl1t3v2s16srrhq'
-		},
-		success: function(json){
-			console.log("hi");
-			console.log(json);
-		},
-		error: function(jqXHR, exception){
-			console.log("jqXHR: "+jqXHR +"; exception: "+exception);
-		}
-	});
 }
