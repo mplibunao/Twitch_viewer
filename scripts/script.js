@@ -11,37 +11,27 @@ var generatedFeaturedGames = [];
 var isClose = true;
 
 $(document).ready(function(){
-	console.log(generatedFeaturedGames[0]);
-	//nav bar items
+
+	/*	Event listener for navbar button
+		@ Uses global variable isClose to check if nav is currently open or not
+		@ Calls OpenNav to open nav and display default streamers
+		@ Calls clearNav and closeNav to hide and close navbar
+	*/
 	$('.show-nav-button').on('click', function(){
 		if (isClose === true){
 			openNav('.streamer-row');
-			//$('.sidenav').animate({width: '+=250px'}, 'fast');
-			//$('.main-container').animate({marginLeft: '+=250px'}, 'slow');
-			//$('.search-streamer').show();
-			///$('.streamer-menu').contents().show();
-			//show list of streamers
-			//$('.streamer-row').show(200);
-			//$('.streamer-row').contents().show(600);
-			//isClose = false;
 		} else if (isClose === false){
-			//$('.sidenav').animate({width: '-=250px'}, 'fast');
-			//$('.main-container').animate({marginLeft: '-=250px'}, 'slow');
-			//$('.search-streamer').hide();
-			//$('.streamer-menu').contents().hide();
 			clearNav();
 			closeNav();
-			//isClose = true;
 		}
 	});
 
-	//load Twitch javascript sdk to perform authentication /login your users for additional permissions
-	//Twitch.init({clientId: 'i0bm039u6j4dr1ifl1t3v2s16srrhq'}, function(error,status){
-		//the sdk is now loaded
-	//	console.log('Twitch javacript sdk now loaded');
-	//});
 
-	//add event handlder for the viewMoreDetails button in the sidenav
+	/*	Event listener to view for details about the streamer
+		@ Traverses the dom from and to parent and sibling elements
+		@ Changes the streamer-more-info button from an downside arrow to upside and vice-versa
+		@ Relies on checking if the css display element is none or block to know whether to hide or show details
+	*/
 	$('.sidenav-item-container').on('click', '.streamer-more-info', function(){
 		//if hidden then unhide
 		if ($(this).closest('.result').next('.streamer-details').css("display") == "none"){
@@ -101,7 +91,7 @@ $(document).ready(function(){
 		for (var i=0; i<=generatedFeaturedGames.length; i++){
 			//console.log("array: " +generatedFeaturedGames[i]);
 			if (game == generatedFeaturedGames[i]){
-				console.log('game already exisit');
+				//console.log('game already exists');
 				exists = true;
 			}
 		}
@@ -121,10 +111,16 @@ $(document).ready(function(){
 		}
 	});
 
-
+	/*  Default set of streams to fetch on load
+		@ comster 404 account does not exist
+	*/
 	var myChannels = ["WagamamaTV", "ODPixel", "Starladder1", "ESL_SC2", "dotastarladder_en", "EternaLEnVyy", "BeyondtheSummit_ES", "Freecodecamp", "OgamingSC2", "cretetion", "comster404"];
-	var game = ["Dota 2"];
 	
+	/*	Initial document ready functions to be called
+		@ getDefaultChannels fetches the channels from the default list of streams
+		@ createPlayer creates an instance of the twitch player
+		@ getFeaturedGames fetches the top games in twitch by descending order
+	*/
 	getDefaultChannels(myChannels);
 	createPlayer();
 	getFeaturedGames();
@@ -132,12 +128,15 @@ $(document).ready(function(){
 
 })//close document ready
 
+
+/** Functions **/
+
+
 /*	Handles opening nav bar
 	@ streamType is the name of the class to show
 	  for filtering results
 	@ Sets isClose to false after opening nav
 */
-
 var openNav = function(streamType){
 	$('.sidenav').animate({width: '+=250px'}, 'fast');
 	$('.main-container').animate({marginLeft: '+=250px'}, 'slow');
@@ -147,6 +146,26 @@ var openNav = function(streamType){
 	$(streamType).show(200);
 	$(streamType).contents().show(600);
 	isClose = false;
+}
+
+/* 	Handles hiding all elements when closing nav
+	@ .result is the main class for all streamers and their details
+	@ find all chevron-up icons and converts them to chevron down
+*/
+var clearNav = function(){
+	$('.result').find('.fa-chevron-up').removeClass('fa-chevron-up').addClass('fa-chevron-down');
+	$('.result').hide();
+}
+
+/*  Handles animation for moving navbar to closed position
+	@ Set isClose to true after closing the nav
+*/
+var closeNav = function(){
+	$('.sidenav').animate({width: '-=250px'}, 'fast');
+	$('.main-container').animate({marginLeft: '-=250px'}, 'slow');
+	$('.search-streamer').hide();
+	$('.streamer-menu').contents().hide();
+	isClose = true;
 }
 
 
@@ -181,26 +200,6 @@ var watch = function(channel){
 	}
 }
 
-
-
-	/* Handles hiding all elements when closing nav
-	@ .result is the main class for all streamers and their details
-	@ find all chevron-up icons and converts them to chevron down
-*/
-var clearNav = function(){
-	$('.result').find('.fa-chevron-up').removeClass('fa-chevron-up').addClass('fa-chevron-down');
-	$('.result').hide();
-}
-/*  Handles animation for moving navbar to closed position
-	@ Set isClose to true after closing the nav
-*/
-var closeNav = function(){
-	$('.sidenav').animate({width: '-=250px'}, 'fast');
-	$('.main-container').animate({marginLeft: '-=250px'}, 'slow');
-	$('.search-streamer').hide();
-	$('.streamer-menu').contents().hide();
-	isClose = true;
-}
 
 /*  Searches the side nav for a matching streamer
 	@ displayName = String from search bar
@@ -347,7 +346,7 @@ var setFeaturedGameNav = function(logo, displayName, url, status, game, language
 	details+= '<p class="details-status">' + status + '</p>';
 	details+= '<p class="details-game">Game : ' + game + '</p>';
 	details+= '<p class="details-language">Language: ' + language + '</p>';
-	details+= '<p class="details-viewers">' + viewers + '</p>';
+	details+= '<p class="details-viewers">' + viewers.toLocaleString() + ' people currently watching!</p>';
 	details+= '<a href="#"><button class="btn btn-block" onclick="watch(\'' + displayName +'\')">Watch</button></a>';
 	details+= '<a href="' + url + '" target="_blank"><button class="btn btn-block visit-channel">Visit Channel</button></a>';
 	details+= '</div>';
@@ -366,6 +365,7 @@ var setFeaturedGameNav = function(logo, displayName, url, status, game, language
  @ channel is name of the channel
  @ callbackFunction is a function passed to the function
    to be called on success 
+ @ Returns null on channels which are offline and doesn't exists
 */
 var getChannelInfo = function(channels, callbackFunction){
 	var url = "https://api.twitch.tv/kraken/streams/"+channels;
@@ -438,14 +438,51 @@ var getOfflineChannelInfo = function(channel){
 	});
 }
 
+/* Displays channels not found
+   @Takes variables as parameters and puts it inside html
+   @htmlJquery and @detailsJquery - are placeholder variables
+   so I can convert the html into a jQuery object then pass .hide()
+   and be hidden on creation
+*/
+var setClosedChannel = function(logo, displayName){
+	displayName = displayName.toUpperCase();
+	var htmlJquery;
+	var detailsJquery;
 
-/* @ Call the getChannelInfo function
-   @ Passes an anonymous function as an argument
-   which handles success login
-   @ Anonymous function takes the result json as
-   parameter and passes it to another function to
-   put into the page
+	var html = '<div class="row streamer-row result offline">';
+	html+= '<img class="streamer-logo" src="'+ logo +'" alt="' + displayName + '"/>';
+	html+= '<a class="sidenav-items streamer-name" href="#">' + displayName + '</a>';
+	html+= '<a href="#" class="streamer-more-info"><i class="fa fa-chevron-down" aria-hidden="true"></i></a>';
+	html+= '</div>';
+
+	var details = '<div class="row streamer-details result">';
+	details+= '<p class="details-status">Account does not exist</p>';
+	details+= '<p class="details-language">' + displayName +' might have closed his account</p>';
+	details+= '</div>';
+
+	htmlJquery = $(html).hide();
+	detailsJquery = $(details).hide();
+
+	//append in sidenav container
+
+	setTimeout(function(){
+		$('.sidenav-item-container').append(htmlJquery);
+		$('.sidenav-item-container').append(detailsJquery);
+		console.log('done waiting');
+	},1000);
+	
+}
+
+
+/* Calls the getChannelInfo function to fetch the information on the default channels
+   @ Passes an anonymous function as an argument which handles success login
+   @ Anonymous function takes the result json as parameter and passes it to another function to put into the page
    @ classStatus will be used selector class for showing and removing elements
+
+   I realized this might be a little confusing way to do it, and I might have been able to just set the variables and the html setter
+   in getChannelInfo but I didn't wanna change it anymore since it was working and didn't wanna break anything anymore.
+   Although I think I originally decided to make a sort of feedback loop with the ajax function and the caller because of the variables returning
+   undefined due to async (I tried to learn promises but just wasted half a day)
 */
 var getDefaultChannels = function(channelArray){
 	var logo;
@@ -517,43 +554,6 @@ var setStreamerNav = function(logo, displayName, url, status, game, language, vi
 	$('.sidenav-item-container').append(detailsJquery);
 
 }
-
-
-/* Displays channels not found
-   @Takes variables as parameters and puts it inside html
-   @htmlJquery and @detailsJquery - are placeholder variables
-   so I can convert the html into a jQuery object then pass .hide()
-   and be hidden on creation
-*/
-var setClosedChannel = function(logo, displayName){
-
-	var htmlJquery;
-	var detailsJquery;
-
-	var html = '<div class="row streamer-row result offline">';
-	html+= '<img class="streamer-logo" src="'+ logo +'" alt="' + displayName + '"/>';
-	html+= '<a class="sidenav-items streamer-name" href="#">' + displayName + '</a>';
-	html+= '<a href="#" class="streamer-more-info"><i class="fa fa-chevron-down" aria-hidden="true"></i></a>';
-	html+= '</div>';
-
-	var details = '<div class="row streamer-details result">';
-	details+= '<p class="details-status">Account does not exist</p>';
-	details+= '<p class="details-language">' + displayName +' might have closed his account</p>';
-	details+= '</div>';
-
-	htmlJquery = $(html).hide();
-	detailsJquery = $(details).hide();
-
-	//append in sidenav container
-
-	setTimeout(function(){
-		$('.sidenav-item-container').append(htmlJquery);
-		$('.sidenav-item-container').append(detailsJquery);
-		console.log('done waiting');
-	},1000);
-	
-}
-
 
 /* Filter list of streamers in the navbar
 @ Wildcard param is the streamer status to display
