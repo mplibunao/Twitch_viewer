@@ -1,3 +1,4 @@
+# twitch_player
 One of the Intermediate Front End Development Projects for Free Code Camp
 
 Use the Twitch.tv JSON API to fulfill the following User Stories:
