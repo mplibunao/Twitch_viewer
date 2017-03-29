@@ -1,5 +1,7 @@
 # twitch_player
 
+Visit github pages to view or test the application: https://mplibunao.github.io/twitch_player/#
+
 One of the Intermediate Front End Development Projects for Free Code Camp
 
 Use the Twitch.tv JSON API to fulfill the following User Stories:
